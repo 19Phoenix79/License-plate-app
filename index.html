@@ -1,335 +1,279 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Vision B4 Da Bag – Design Studio</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vision B4 Da Bag – Design Tool</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #0d0d0d;
-      color: #fff;
-      text-align: center;
+    :root{
+      --gold:#d4af37;
+      --bg1:#111; --bg2:#222; --panel:#2b2b2b;
+      --card:#444; --muted:#ccc; --accent:#d4af37;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;padding:0;font-family:Inter, "Segoe UI", Arial, sans-serif;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;
+      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+    }
+    header{padding:22px 16px;background:#000;border-bottom:3px solid var(--gold);}
+    header .brand{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px}
+    header h1{margin:0;font-size:20px;color:var(--gold);letter-spacing:1px}
+    header p{margin:0;color:var(--muted);font-size:13px}
+
+    .app{max-width:1200px;margin:28px auto;padding:18px;display:grid;grid-template-columns:320px 1fr;gap:18px}
+
+    /* left controls */
+    .panel{background:linear-gradient(180deg,var(--panel),#222);padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .panel h2{margin:0 0 12px 0;font-size:15px;color:var(--gold)}
+    input[type=file]{display:block;width:100%;padding:10px;border-radius:6px;border:0;background:var(--gold);color:#000;font-weight:700;cursor:pointer}
+
+    .controls{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .controls label{font-size:13px;color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:center}
+    select,input[type=color],button{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:#333;color:#fff}
+    .small{font-size:13px}
+
+    .btn{background:var(--gold);color:#000;border:none;padding:10px;border-radius:8px;font-weight:700;cursor:pointer}
+
+    .hint{font-size:12px;color:#bfbfbf}
+
+    /* template area */
+    .canvas-wrap{display:flex;justify-content:center;align-items:center}
+    .template{
+      width:100%;max-width:1200px;background:var(--card);border-radius:12px;border:3px solid var(--gold);overflow:hidden;position:relative;
+      box-shadow:0 6px 30px rgba(0,0,0,0.6);aspect-ratio:2/1; /* responsive 1200x600 ratio */
     }
 
-    header {
-      padding: 30px 0 20px;
-      background: #000;
-      border-bottom: 3px solid #d4af37;
-      box-shadow: 0 0 25px rgba(0,0,0,0.7);
+    /* photo area implemented as background-layer for easier pan/zoom and object-fit:cover behavior */
+    .photo-layer{
+      position:absolute;inset:0;background-size:cover;background-position:50% 50%;background-repeat:no-repeat;transition:background-position .08s linear;
     }
 
-    .logo {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background-size: cover;
-      background-position: center;
-      margin: 0 auto 10px;
-      border: 3px solid #d4af37;
+    .overlay{position:absolute;inset:0;pointer-events:none}
+
+    .template .frame{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.9);
+      font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:20px;pointer-events:none
     }
 
-    h1 {
-      margin: 0;
-      font-size: 42px;
-      color: #d4af37;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 800;
-    }
+    /* footer controls inside template */
+    .template .controls-inline{position:absolute;right:12px;bottom:12px;display:flex;gap:8px;pointer-events:auto}
+    .template .controls-inline button{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px;border-radius:8px}
 
-    .tagline {
-      margin-top: 8px;
-      font-size: 18px;
-      color: #ccc;
-      font-style: italic;
-    }
-
-    .motto {
-      margin-top: 5px;
-      font-size: 15px;
-      color: #999;
-    }
-
-    .contact {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #777;
-    }
-
-    .container {
-      margin-top: 30px;
-    }
-
-    #upload {
-      margin: 20px auto;
-      padding: 12px 18px;
-      background: #d4af37;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      color: #000;
-      font-weight: bold;
-    }
-
-    .template-select {
-      margin: 20px 0;
-      font-size: 16px;
-    }
-
-    .template-select select {
-      padding: 10px 14px;
-      border-radius: 6px;
-      border: 1px solid #d4af37;
-      background: #111;
-      color: #d4af37;
-      font-size: 16px;
-    }
-
-    .controls {
-      margin: 20px 0;
-    }
-
-    .controls button {
-      margin: 0 8px;
-      padding: 10px 18px;
-      font-size: 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: #333;
-      color: #fff;
-      transition: 0.2s;
-      border: 1px solid #555;
-    }
-
-    .controls button:hover {
-      background: #d4af37;
-      color: #000;
-      border-color: #d4af37;
-    }
-
-    .template-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-top: 25px;
-      margin-bottom: 40px;
-    }
-
-    .template {
-      width: 1200px;
-      height: 600px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-      border: 3px solid #d4af37;
-      box-shadow: 0 0 25px rgba(0,0,0,0.7);
-      background: #444;
-    }
-
-    #background {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      filter: blur(25px);
-      transform: scale(1.2);
-      display: none;
-    }
-
-    #photo {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: auto;
-      cursor: grab;
-    }
-
-    footer {
-      padding: 20px 0 30px;
-      font-size: 13px;
-      color: #777;
-    }
-
-    /* PRINT MODE */
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      .template, .template * {
-        visibility: visible;
-      }
-      .template {
-        position: absolute;
-        top: 0;
-        left: 0;
-        box-shadow: none;
-        border: none;
-      }
-    }
+    /* responsive */
+    @media(max-width:900px){.app{grid-template-columns:1fr;}.panel{order:2}.template{order:1}}
   </style>
 </head>
-
 <body>
-
 <header>
-  <!-- Upload your logo file to GitHub and replace the URL below -->
-  <div class="logo" style="background-image: url('logo.png');"></div>
-
-  <h1>Vision B4 Da Bag</h1>
-
-  <div class="tagline">Streetwear for the grinders, hustlers, and entrepreneurs.</div>
-  <div class="motto">Have the vision first… the bag comes after.</div>
-  <div class="contact">Contact: visionb4dabag@gmail.com</div>
-</header>
-
-<div class="container">
-  <input type="file" id="upload" accept="image/*">
-
-  <div class="template-select">
-    <label>Select Template:</label>
-    <select id="templatePicker">
-      <option value="plate">6x12 License Plate</option>
-      <option value="20oz">20oz Tumbler</option>
-      <option value="30oz">30oz Tumbler</option>
-      <option value="hat">Hat Print</option>
-      <option value="shirt">T‑Shirt Print</option>
-    </select>
-  </div>
-
-  <div class="controls">
-    <button id="modeCrop">Auto Crop</button>
-    <button id="modeBlur">Blur Background</button>
-    <button id="modeColor">Solid Color Fill</button>
-    <button id="printBtn">Print</button>
-  </div>
-
-  <div class="template-wrapper">
-    <div class="template">
-      <div id="background"></div>
-      <img id="photo" src="">
+  <div class="brand">
+    <div>
+      <h1>Vision B4 Da Bag</h1>
+      <p>Design Tool — Professional templates for prints</p>
     </div>
   </div>
-</div>
+</header>
 
-<footer>
-  © Vision B4 Da Bag — Custom Apparel & Printing Service
-</footer>
+<main class="app">
+  <aside class="panel" aria-labelledby="controls-title">
+    <h2 id="controls-title">Image & Output Controls</h2>
+
+    <input id="upload" type="file" accept="image/*" aria-label="Upload photo">
+    <div class="controls">
+      <div>
+        <label class="small">Fit mode</label>
+        <div class="row"><select id="fitMode" class="small" title="How the photo fills the template"><option value="cover" selected>Fill (cover) — fills template without distortion</option><option value="contain">Fit (contain) — show whole image (may letterbox)</option></select></div>
+      </div>
+
+      <div>
+        <label class="small">Background</label>
+        <div class="row">
+          <button id="bgBlur" class="small">Blur photo background</button>
+          <button id="bgColorBtn" class="small">Solid color</button>
+          <input id="bgColor" type="color" value="#222" title="Background color" style="display:none">
+        </div>
+      </div>
+
+      <div>
+        <label class="small">Zoom</label>
+        <div class="row"><input id="zoom" type="range" min="100" max="300" value="100"></div>
+        <div class="hint">Use zoom and drag to position focal point</div>
+      </div>
+
+      <div>
+        <label class="small">Export</label>
+        <div class="row">
+          <button id="download" class="btn">Download PNG</button>
+          <button id="reset" class="small">Reset</button>
+        </div>
+      </div>
+
+      <div class="hint" style="margin-top:8px">Tip: Choose "Fill (cover)" to stretch the photo to the template without distortion. Drag inside the preview to reposition.</div>
+    </div>
+  </aside>
+
+  <section class="canvas-wrap">
+    <div id="template" class="template" role="img" aria-label="Preview template">
+      <div id="backgroundLayer" class="photo-layer" style="z-index:1;background-size:cover;"></div>
+      <div id="photoLayer" class="photo-layer" style="z-index:2;"></div>
+
+      <div class="frame">License Plate Print</div>
+
+      <div class="controls-inline" aria-hidden="true">
+        <button id="btnFit">Fit</button>
+        <button id="btnCover">Cover</button>
+      </div>
+    </div>
+  </section>
+</main>
 
 <script>
-  const upload = document.getElementById("upload");
-  const photo = document.getElementById("photo");
-  const background = document.getElementById("background");
-  const templatePicker = document.getElementById("templatePicker");
-  const templateBox = document.querySelector(".template");
+  // elements
+  const upload = document.getElementById('upload');
+  const template = document.getElementById('template');
+  const photoLayer = document.getElementById('photoLayer');
+  const backgroundLayer = document.getElementById('backgroundLayer');
+  const fitMode = document.getElementById('fitMode');
+  const zoom = document.getElementById('zoom');
+  const bgBlurBtn = document.getElementById('bgBlur');
+  const bgColorBtn = document.getElementById('bgColorBtn');
+  const bgColor = document.getElementById('bgColor');
+  const downloadBtn = document.getElementById('download');
+  const resetBtn = document.getElementById('reset');
 
-  function updateTemplateSize(type) {
-    switch(type) {
-      case "plate":
-        templateBox.style.width = "1200px";
-        templateBox.style.height = "600px";
-        break;
-      case "20oz":
-        templateBox.style.width = "930px";
-        templateBox.style.height = "820px";
-        break;
-      case "30oz":
-        templateBox.style.width = "1030px";
-        templateBox.style.height = "950px";
-        break;
-      case "hat":
-        templateBox.style.width = "400px";
-        templateBox.style.height = "250px";
-        break;
-      case "shirt":
-        templateBox.style.width = "1200px";
-        templateBox.style.height = "1600px";
-        break;
+  let img = new Image();
+  let imgURL = '';
+  let naturalW = 0, naturalH = 0;
+
+  // state for panning/position in percent (0-100)
+  const pos = {x:50,y:50};
+
+  // background mode
+  let useBlurBg = false;
+  let useSolidBg = false;
+
+  function updateLayers(){
+    if(!imgURL) return;
+    const sizePercent = zoom.value + '%';
+    // set background and photo layers
+    backgroundLayer.style.backgroundImage = `url(${imgURL})`;
+    photoLayer.style.backgroundImage = `url(${imgURL})`;
+
+    // background styling
+    if(useSolidBg){
+      backgroundLayer.style.backgroundImage = 'none';
+      backgroundLayer.style.backgroundColor = bgColor.value;
+      backgroundLayer.style.filter = 'none';
+      backgroundLayer.style.backgroundSize = 'cover';
+    } else {
+      backgroundLayer.style.backgroundColor = 'transparent';
+      backgroundLayer.style.backgroundSize = (fitMode.value==='contain')? 'contain' : sizePercent;
+      backgroundLayer.style.filter = useBlurBg ? 'blur(14px) brightness(.9)' : 'none';
+      backgroundLayer.style.transform = useBlurBg ? 'scale(1.05)' : 'none';
     }
 
-    photo.style.left = "0px";
-    photo.style.top = "0px";
+    // photo layer styling
+    photoLayer.style.backgroundSize = (fitMode.value === 'contain') ? 'contain' : sizePercent;
+    photoLayer.style.backgroundPosition = `${pos.x}% ${pos.y}%`;
+    backgroundLayer.style.backgroundPosition = `${pos.x}% ${pos.y}%`;
   }
 
-  templatePicker.onchange = () => {
-    updateTemplateSize(templatePicker.value);
-  };
-
-  updateTemplateSize("plate");
-
-  upload.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-
-    photo.src = url;
-    background.style.backgroundImage = `url(${url})`;
-
-    photo.style.left = "0px";
-    photo.style.top = "0px";
-  };
-
-  let dragging = false;
-  let startX, startY;
-
-  photo.addEventListener("mousedown", e => {
-    if (!photo.src) return;
-    dragging = true;
-    startX = e.clientX - photo.offsetLeft;
-    startY = e.clientY - photo.offsetTop;
-    photo.style.cursor = "grabbing";
+  upload.addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    imgURL = URL.createObjectURL(file);
+    img = new Image();
+    img.onload = () => { naturalW = img.naturalWidth; naturalH = img.naturalHeight; }
+    img.src = imgURL;
+    // reset
+    pos.x = 50; pos.y = 50; zoom.value = 100; useBlurBg = false; useSolidBg = false; bgColor.style.display = 'none';
+    updateLayers();
   });
 
-  document.addEventListener("mousemove", e => {
-    if (dragging) {
-      photo.style.left = (e.clientX - startX) + "px";
-      photo.style.top = (e.clientY - startY) + "px";
+  // fit mode quick buttons
+  document.getElementById('btnFit').addEventListener('click', ()=>{fitMode.value='contain'; updateLayers();});
+  document.getElementById('btnCover').addEventListener('click', ()=>{fitMode.value='cover'; updateLayers();});
+  fitMode.addEventListener('change', updateLayers);
+  zoom.addEventListener('input', updateLayers);
+
+  bgBlurBtn.addEventListener('click', ()=>{useBlurBg = !useBlurBg; useSolidBg = false; bgColor.style.display = 'none'; updateLayers(); bgBlurBtn.style.opacity = useBlurBg?1:0.7});
+  bgColorBtn.addEventListener('click', ()=>{useSolidBg = !useSolidBg; useBlurBg = false; bgColor.style.display = useSolidBg? 'inline-block':'none'; updateLayers(); bgColorBtn.style.opacity = useSolidBg?1:0.7});
+  bgColor.addEventListener('input', updateLayers);
+
+  resetBtn.addEventListener('click', ()=>{pos.x=50;pos.y=50;zoom.value=100;useBlurBg=false;useSolidBg=false;bgColor.style.display='none';updateLayers();});
+
+  // panning: translate pointer movement to background-position percent
+  let dragging=false; let start={x:0,y:0};
+  template.addEventListener('pointerdown', e=>{
+    if(!imgURL) return;
+    dragging = true; template.setPointerCapture(e.pointerId); start.x = e.clientX; start.y = e.clientY; start.px = pos.x; start.py = pos.y;
+  });
+  window.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const rect = template.getBoundingClientRect();
+    // convert movement to percent relative to width/height
+    const dx = (e.clientX - start.x) / rect.width * 100;
+    const dy = (e.clientY - start.y) / rect.height * 100;
+    pos.x = Math.max(0, Math.min(100, start.px + dx));
+    pos.y = Math.max(0, Math.min(100, start.py + dy));
+    updateLayers();
+  });
+  window.addEventListener('pointerup', e=>{dragging=false});
+
+  // download: render to canvas at template aspect ratio, use 2400x1200 for high quality
+  downloadBtn.addEventListener('click', async ()=>{
+    if(!imgURL) return alert('Please upload an image first');
+    const outW = 2400, outH = 1200; // double resolution
+    const canvas = document.createElement('canvas'); canvas.width = outW; canvas.height = outH;
+    const ctx = canvas.getContext('2d');
+
+    // draw background (either blurred photo or solid color)
+    if(useSolidBg){
+      ctx.fillStyle = bgColor.value; ctx.fillRect(0,0,outW,outH);
+    } else if(imgURL){
+      // draw blurred background scaled to cover
+      const tmp = await loadImage(imgURL);
+      const scaleBg = Math.max(outW/tmp.naturalWidth, outH/tmp.naturalHeight);
+      const dispW = tmp.naturalWidth*scaleBg, dispH = tmp.naturalHeight*scaleBg;
+      const posX = (pos.x/100)*(dispW - outW);
+      const posY = (pos.y/100)*(dispH - outH);
+      // draw blurred
+      ctx.save(); ctx.filter = useBlurBg ? 'blur(12px) brightness(.9)' : 'none';
+      ctx.drawImage(tmp, -posX, -posY, dispW, dispH);
+      ctx.restore();
     }
+
+    // draw main photo area according to fitMode and zoom/position
+    const main = await loadImage(imgURL);
+    let scale;
+    if(fitMode.value==='contain'){
+      scale = Math.min(outW/main.naturalWidth, outH/main.naturalHeight) * (zoom.value/100);
+      const dispW = main.naturalWidth*scale, dispH = main.naturalHeight*scale;
+      const offsetX = (outW - dispW)/2; const offsetY = (outH - dispH)/2;
+      ctx.drawImage(main, 0,0, main.naturalWidth, main.naturalHeight, offsetX, offsetY, dispW, dispH);
+    } else {
+      // cover: scale so image covers canvas, then crop according to pos
+      scale = Math.max(outW/main.naturalWidth, outH/main.naturalHeight) * (zoom.value/100);
+      const dispW = main.naturalWidth*scale, dispH = main.naturalHeight*scale;
+      const maxOffsetX = Math.max(0, dispW - outW);
+      const maxOffsetY = Math.max(0, dispH - outH);
+      const offsetX = - (pos.x/100) * maxOffsetX;
+      const offsetY = - (pos.y/100) * maxOffsetY;
+      ctx.drawImage(main, offsetX, offsetY, dispW, dispH);
+    }
+
+    // export
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a'); a.href = url; a.download = 'visionb4dabag-print.png'; a.click();
   });
 
-  document.addEventListener("mouseup", () => {
-    dragging = false;
-    photo.style.cursor = "grab";
-  });
+  function loadImage(src){
+    return new Promise((res,rej)=>{const i=new Image(); i.crossOrigin='anonymous'; i.onload=()=>res(i); i.onerror=rej; i.src=src;});
+  }
 
-  document.getElementById("modeCrop").onclick = () => {
-    background.style.display = "none";
-    background.style.filter = "blur(25px)";
-    photo.style.width = "100%";
-    photo.style.height = "auto";
-  };
-
-  document.getElementById("modeBlur").onclick = () => {
-    if (!photo.src) return;
-    background.style.display = "block";
-    background.style.filter = "blur(25px)";
-    background.style.backgroundColor = "transparent";
-    photo.style.width = "auto";
-    photo.style.height = "100%";
-    photo.style.left = "0px";
-    photo.style.top = "0px";
-  };
-
-  document.getElementById("modeColor").onclick = () => {
-    background.style.display = "block";
-    background.style.filter = "none";
-    background.style.backgroundImage = "none";
-    background.style.backgroundColor = "#222";
-    photo.style.width = "auto";
-    photo.style.height = "100%";
-    photo.style.left = "0px";
-    photo.style.top = "0px";
-  };
-
-  document.getElementById("printBtn").onclick = () => {
-    window.print();
-  };
+  // initialize appearance
+  updateLayers();
 </script>
-
 </body>
 </html>

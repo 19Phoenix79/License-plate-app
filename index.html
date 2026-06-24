@@ -2,38 +2,61 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Vision B4 Da Bag – Design Tool</title>
+  <title>Vision B4 Da Bag – Design Studio</title>
 
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #111, #222, #111);
+      background: #0d0d0d;
       color: #fff;
       text-align: center;
     }
 
     header {
-      padding: 25px 0;
+      padding: 30px 0 20px;
       background: #000;
       border-bottom: 3px solid #d4af37;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      box-shadow: 0 0 25px rgba(0,0,0,0.7);
     }
 
-    header h1 {
+    .logo {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      margin: 0 auto 10px;
+      border: 3px solid #d4af37;
+    }
+
+    h1 {
       margin: 0;
-      font-size: 38px;
-      letter-spacing: 2px;
+      font-size: 42px;
       color: #d4af37;
-      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 800;
     }
 
-    header p {
-      margin: 5px 0 0;
-      font-size: 16px;
+    .tagline {
+      margin-top: 8px;
+      font-size: 18px;
       color: #ccc;
+      font-style: italic;
+    }
+
+    .motto {
+      margin-top: 5px;
+      font-size: 15px;
+      color: #999;
+    }
+
+    .contact {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #777;
     }
 
     .container {
@@ -42,7 +65,7 @@
 
     #upload {
       margin: 20px auto;
-      padding: 10px;
+      padding: 12px 18px;
       background: #d4af37;
       border: none;
       border-radius: 6px;
@@ -58,7 +81,7 @@
     }
 
     .template-select select {
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 6px;
       border: 1px solid #d4af37;
       background: #111;
@@ -128,9 +151,9 @@
     }
 
     footer {
-      padding: 15px 0 25px;
+      padding: 20px 0 30px;
       font-size: 13px;
-      color: #888;
+      color: #777;
     }
 
     /* PRINT MODE */
@@ -155,8 +178,14 @@
 <body>
 
 <header>
+  <!-- Upload your logo file to GitHub and replace the URL below -->
+  <div class="logo" style="background-image: url('logo.png');"></div>
+
   <h1>Vision B4 Da Bag</h1>
-  <p>Custom Tumblers • T‑Shirts • Hats • License Plate Prints</p>
+
+  <div class="tagline">Streetwear for the grinders, hustlers, and entrepreneurs.</div>
+  <div class="motto">Have the vision first… the bag comes after.</div>
+  <div class="contact">Contact: visionb4dabag@gmail.com</div>
 </header>
 
 <div class="container">
@@ -189,7 +218,7 @@
 </div>
 
 <footer>
-  Vision B4 Da Bag • Design Tool
+  © Vision B4 Da Bag — Custom Apparel & Printing Service
 </footer>
 
 <script>
@@ -297,7 +326,6 @@
     photo.style.top = "0px";
   };
 
-  // PRINT BUTTON
   document.getElementById("printBtn").onclick = () => {
     window.print();
   };

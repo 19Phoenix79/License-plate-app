@@ -52,6 +52,24 @@
       font-weight: bold;
     }
 
+    .template-select {
+      margin: 20px 0;
+      font-size: 16px;
+    }
+
+    .template-select label {
+      margin-right: 8px;
+    }
+
+    .template-select select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #d4af37;
+      background: #111;
+      color: #d4af37;
+      font-size: 16px;
+    }
+
     .controls {
       margin: 20px 0;
     }
@@ -79,10 +97,11 @@
       display: flex;
       justify-content: center;
       margin-top: 25px;
+      margin-bottom: 40px;
     }
 
     .template {
-      width: 1200px;
+      width: 1200px;   /* default: 6x12 plate */
       height: 600px;
       position: relative;
       overflow: hidden;
@@ -111,6 +130,12 @@
       height: auto;
       cursor: grab;
     }
+
+    footer {
+      padding: 15px 0 25px;
+      font-size: 13px;
+      color: #888;
+    }
   </style>
 </head>
 
@@ -123,6 +148,17 @@
 
 <div class="container">
   <input type="file" id="upload" accept="image/*">
+
+  <div class="template-select">
+    <label>Select Template:</label>
+    <select id="templatePicker">
+      <option value="plate">6x12 License Plate</option>
+      <option value="20oz">20oz Tumbler</option>
+      <option value="30oz">30oz Tumbler</option>
+      <option value="hat">Hat Print</option>
+      <option value="shirt">T‑Shirt Print</option>
+    </select>
+  </div>
 
   <div class="controls">
     <button id="modeCrop">Auto Crop</button>
@@ -138,11 +174,55 @@
   </div>
 </div>
 
+<footer>
+  Vision B4 Da Bag • Design Tool
+</footer>
+
 <script>
   const upload = document.getElementById("upload");
   const photo = document.getElementById("photo");
   const background = document.getElementById("background");
+  const templatePicker = document.getElementById("templatePicker");
+  const templateBox = document.querySelector(".template");
 
+  // Template sizing
+  function updateTemplateSize(type) {
+    switch(type) {
+      case "plate":      // 6x12 license plate
+        templateBox.style.width = "1200px";
+        templateBox.style.height = "600px";
+        break;
+      case "20oz":       // 20oz tumbler wrap (approx)
+        templateBox.style.width = "930px";
+        templateBox.style.height = "820px";
+        break;
+      case "30oz":       // 30oz tumbler wrap (approx)
+        templateBox.style.width = "1030px";
+        templateBox.style.height = "950px";
+        break;
+      case "hat":        // hat patch
+        templateBox.style.width = "400px";
+        templateBox.style.height = "250px";
+        break;
+      case "shirt":      // t‑shirt front
+        templateBox.style.width = "1200px";
+        templateBox.style.height = "1600px";
+        break;
+    }
+
+    // Reset image position
+    photo.style.left = "0px";
+    photo.style.top = "0px";
+  }
+
+  templatePicker.onchange = () => {
+    updateTemplateSize(templatePicker.value);
+  };
+
+  // Initial template
+  updateTemplateSize("plate");
+
+  // Load image
   upload.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -155,6 +235,7 @@
     photo.style.top = "0px";
   };
 
+  // Dragging
   let dragging = false;
   let startX, startY;
 
@@ -178,6 +259,7 @@
     photo.style.cursor = "grab";
   });
 
+  // Modes
   document.getElementById("modeCrop").onclick = () => {
     background.style.display = "none";
     background.style.filter = "blur(25px)";

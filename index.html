@@ -57,10 +57,6 @@
       font-size: 16px;
     }
 
-    .template-select label {
-      margin-right: 8px;
-    }
-
     .template-select select {
       padding: 8px 12px;
       border-radius: 6px;
@@ -101,7 +97,7 @@
     }
 
     .template {
-      width: 1200px;   /* default: 6x12 plate */
+      width: 1200px;
       height: 600px;
       position: relative;
       overflow: hidden;
@@ -136,6 +132,23 @@
       font-size: 13px;
       color: #888;
     }
+
+    /* PRINT MODE */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .template, .template * {
+        visibility: visible;
+      }
+      .template {
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-shadow: none;
+        border: none;
+      }
+    }
   </style>
 </head>
 
@@ -164,6 +177,7 @@
     <button id="modeCrop">Auto Crop</button>
     <button id="modeBlur">Blur Background</button>
     <button id="modeColor">Solid Color Fill</button>
+    <button id="printBtn">Print</button>
   </div>
 
   <div class="template-wrapper">
@@ -185,32 +199,30 @@
   const templatePicker = document.getElementById("templatePicker");
   const templateBox = document.querySelector(".template");
 
-  // Template sizing
   function updateTemplateSize(type) {
     switch(type) {
-      case "plate":      // 6x12 license plate
+      case "plate":
         templateBox.style.width = "1200px";
         templateBox.style.height = "600px";
         break;
-      case "20oz":       // 20oz tumbler wrap (approx)
+      case "20oz":
         templateBox.style.width = "930px";
         templateBox.style.height = "820px";
         break;
-      case "30oz":       // 30oz tumbler wrap (approx)
+      case "30oz":
         templateBox.style.width = "1030px";
         templateBox.style.height = "950px";
         break;
-      case "hat":        // hat patch
+      case "hat":
         templateBox.style.width = "400px";
         templateBox.style.height = "250px";
         break;
-      case "shirt":      // t‑shirt front
+      case "shirt":
         templateBox.style.width = "1200px";
         templateBox.style.height = "1600px";
         break;
     }
 
-    // Reset image position
     photo.style.left = "0px";
     photo.style.top = "0px";
   }
@@ -219,10 +231,8 @@
     updateTemplateSize(templatePicker.value);
   };
 
-  // Initial template
   updateTemplateSize("plate");
 
-  // Load image
   upload.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -235,7 +245,6 @@
     photo.style.top = "0px";
   };
 
-  // Dragging
   let dragging = false;
   let startX, startY;
 
@@ -259,7 +268,6 @@
     photo.style.cursor = "grab";
   });
 
-  // Modes
   document.getElementById("modeCrop").onclick = () => {
     background.style.display = "none";
     background.style.filter = "blur(25px)";
@@ -287,6 +295,11 @@
     photo.style.height = "100%";
     photo.style.left = "0px";
     photo.style.top = "0px";
+  };
+
+  // PRINT BUTTON
+  document.getElementById("printBtn").onclick = () => {
+    window.print();
   };
 </script>
 

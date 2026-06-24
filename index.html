@@ -42,7 +42,7 @@
     .canvas-wrap{display:flex;justify-content:center;align-items:center}
     .template{
       width:100%;max-width:1200px;background:var(--card);border-radius:12px;border:3px solid var(--gold);overflow:hidden;position:relative;
-      box-shadow:0 6px 30px rgba(0,0,0,0.6);aspect-ratio:2/1; /* responsive 1200x600 ratio */
+      box-shadow:0 6px 30px rgba(0,0,0,0.6);aspect-ratio:43/21; /* preview now matches 10.75" x 5.25" (reduced by 1.25" width and 0.75" height) */
     }
 
     /* photo area implemented as background-layer for easier pan/zoom and object-fit:cover behavior */
@@ -83,7 +83,7 @@
     <div class="controls">
       <div>
         <label class="small">Fit mode</label>
-        <div class="row"><select id="fitMode" class="small" title="How the photo fills the template"><option value="cover" selected>Fill (cover) — fills template without distortion</option><option value="contain">Fit (contain) — show whole image (may letterbox)</option></select></div>
+        <div class="row"><select id="fitMode" class="small" title="How the photo fills the template"><option value="cover" selected>Fill (cover) — fills template without distortion</option><option value="contain">Fit (contain) — fit whole image inside template</option></select></div>
       </div>
 
       <div>
@@ -221,10 +221,11 @@
   });
   window.addEventListener('pointerup', e=>{dragging=false});
 
-  // download: render to canvas at template aspect ratio, use 2400x1200 for high quality
+  // download: render to canvas at template aspect ratio
+  // Export resolution chosen to match 10.75" x 5.25" at 200 DPI -> 2150 x 1050 px (previously 2400x1200 for 12"x6")
   downloadBtn.addEventListener('click', async ()=>{
     if(!imgURL) return alert('Please upload an image first');
-    const outW = 2400, outH = 1200; // double resolution
+    const outW = 2150, outH = 1050; // pixels for 10.75" x 5.25" at 200 DPI
     const canvas = document.createElement('canvas'); canvas.width = outW; canvas.height = outH;
     const ctx = canvas.getContext('2d');
 
@@ -265,7 +266,7 @@
 
     // export
     const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a'); a.href = url; a.download = 'visionb4dabag-print.png'; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = 'visionb4dabag-print-10.75x5.25-200dpi.png'; a.click();
   });
 
   function loadImage(src){
